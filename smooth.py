@@ -11,8 +11,8 @@ pixels = []
 def capture_click(event,x,y,flags,param):
     if event == cv2.EVENT_LBUTTONDOWN:
         global img,lowers,uppers,pixels
+        
         pixel = img[y,x]
-
         upper =  np.array([int(pixel[0]+(COLOR_RANGE/float(100))*pixel[0]), int(pixel[1]+(COLOR_RANGE/float(100))*pixel[1]), int(pixel[2]+(COLOR_RANGE/float(100))*pixel[2])])
         lower =  np.array([int(pixel[0]-(COLOR_RANGE/float(100))*pixel[0]), int(pixel[1]-(COLOR_RANGE/float(100))*pixel[1]), int(pixel[2]-(COLOR_RANGE/float(100))*pixel[2])])
 
@@ -21,7 +21,7 @@ def capture_click(event,x,y,flags,param):
         pixels.append(pixel)
 
 def main():
-    cam = cv2.VideoCapture(0)
+    cam = cv2.VideoCapture("video.mp4")
 
     cv2.namedWindow("test")
 
@@ -47,17 +47,9 @@ def main():
             blur1= cv2.GaussianBlur(blur0,(1,1),0)
             blur2= cv2.bilateralFilter(blur1,9,200,200)
 
-            cv2.imshow("dsd",blur2)
             mask = cv2.inRange(blur2,curLow,curUpp)
-            im2, contours, hierarchy = cv2.findContours(mask.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-            cv2.imshow("mask",mask)
-            if len(contours)>0:
-                c = max(contours, key = cv2.contourArea)
-                x,y,w,h = cv2.boundingRect(c)
-                oldX,oldY,oldW,oldH = x,y,w,h
-                cv2.rectangle(frame,(x,y),(x+w,y+h),(69,69,255),2)
-            elif oldX!=-1:
-                cv2.rectangle(frame,(oldX,oldY),(oldX+oldW,oldY+oldH),(69,69,255),2)
+            contours = cv2.findContours(mask.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)[1]
+            frame = cv2.bitwise_and(frame,frame,mask=mask)
 
         cv2.imshow("test", frame)
 
