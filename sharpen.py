@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 img = None
 
-COLOR_RANGE=0.25
+COLOR_RANGE=0.30
 WINDOW_NAME = "Video"
 
 lowers = []
@@ -67,11 +67,19 @@ def main():
         # Sharping
         sharp=cv2.addWeighted(frame,3,blur2,-2,0)
 
+        # Erosion
+        kernel = np.ones((1,1),np.uint8)
+        sharp = cv2.erode(sharp,kernel,iterations = 1)
+
         img = sharp
-        
         if(len(lowers) > 0):
           curLow = lowers[0]
           curUpp = uppers[0]
+
+
+          kernel = np.ones((1,1),np.uint8)
+          sharp = cv2.erode(sharp,kernel,iterations = 1)
+          cv2.imshow("er",sharp)
 
           # Create the mask
           mask = cv2.inRange(sharp,curLow,curUpp)
@@ -86,6 +94,7 @@ def main():
             area = max(cont_sort, key=cv2.contourArea)
             (xg,yg,wg,hg) = cv2.boundingRect(area)
             cv2.rectangle(frame,(xg,yg),(xg+wg, yg+hg),(69,69,255),2)
+          cv2.imshow(WINDOW_NAME, frame)
         cv2.imshow(WINDOW_NAME, frame)
 
         k = cv2.waitKey(1)
