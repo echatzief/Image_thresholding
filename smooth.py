@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 img = None
 
-COLOR_RANGE=19
+COLOR_RANGE=18
 lowers = []
 uppers = []
 pixels = []
